@@ -1,4 +1,4 @@
-# 🌩️ UniFi DDNS to Cloudflare ZeroTrust Access Policy IP include rule
+# 🌩️ Cloudflare Access Policy DDNS (Dynamic DNS) support for UniFi OS
 
 [![CodeQL](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/github-code-scanning/codeql)
 [![Code Coverage](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/coverage.yml/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/coverage.yml)
