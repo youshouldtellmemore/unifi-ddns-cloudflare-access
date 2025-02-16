@@ -1,9 +1,9 @@
 # 🌩️ UniFi DDNS to Cloudflare ZeroTrust Access Policy IP include rule
 
-[![CodeQL](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/github-code-scanning/codeql)
-[![Code Coverage](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/coverage.yml/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/coverage.yml)
-[![Dependabot Updates](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/dependabot/dependabot-updates)
-[![Deploy](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/deploy.yml/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns/actions/workflows/deploy.yml)
+[![CodeQL](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/github-code-scanning/codeql)
+[![Code Coverage](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/coverage.yml/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/coverage.yml)
+[![Dependabot Updates](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/dependabot/dependabot-updates)
+[![Deploy](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/deploy.yml/badge.svg)](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/actions/workflows/deploy.yml)
 
 A Cloudflare Worker script that adapts https://github.com/willswire/unifi-ddns to enable UniFi devices (e.g., UDM-Pro, USG) to dynamically update Cloudflare ZeroTrust Access Policy's IP include rule.
 
@@ -18,7 +18,7 @@ This project modifies https://github.com/willswire/unifi-ddns to update an Acces
 ### 1. **Deploy the Cloudflare Worker**
 
 #### **Option 1: Click to Deploy**
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/youshouldtellmemore/unifi-ddns)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access)
 
 1. Click the button above.
 2. Complete the deployment.
@@ -99,4 +99,4 @@ Requests are made using https, which can be verified in Cloudflare Worker Logs l
 
 ## 🛠️ **Testing & Troubleshooting**
 
-Using this script with various Ubiquiti devices and different UniFi software versions can introduce unique challenges. If you encounter issues, start by checking the FAQ in `/docs/faq.md`. If you don’t find a solution, you can ask a question on the [discussions page](https://github.com/youshouldtellmemore/unifi-ddns/discussions/new?category=q-a). If the problem persists, please raise an issue [here](https://github.com/youshouldtellmemore/unifi-ddns/issues).
+Using this script with various Ubiquiti devices and different UniFi software versions can introduce unique challenges. If you encounter issues, start by checking the FAQ in `/docs/faq.md`. If you don’t find a solution, you can ask a question on the [discussions page](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/discussions/new?category=q-a). If the problem persists, please raise an issue [here](https://github.com/youshouldtellmemore/unifi-ddns-cloudflare-access/issues).
