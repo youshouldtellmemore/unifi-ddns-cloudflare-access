@@ -22,11 +22,12 @@ This distinction is crucial to ensure the DDNS updates function correctly.
    - Navigate to **Settings** > **Internet** > **WAN** > **Dynamic DNS**.
 
 2. **Create New Dynamic DNS Entry:**
-   - **Service:** Select `custom`.
-   - **Hostname:** Enter your desired hostname (e.g., `subdomain.example.com`).
-   - **Username:** Enter your Cloudflare account email.
-   - **Password:** Enter your Cloudflare API token.
-   - **Server:** Enter the appropriate server address based on your device model (see FAQ #1).
+   - **Service:** `custom`
+   - **Hostname:** A key from your Cloudflare KV store *(`mykey` or `home`)*
+   - **Username:** This must be set but can be anything (e.g., `building1-udm`)
+   - **Password:** Cloudflare User API Token for Worker Script *(not an Account API Token)*
+   - **Server:** `<worker-name>.<worker-subdomain>.workers.dev/update?ip=%i&hostname=%h`
+     *(Omit `https://`)*
 
 3. **Save Configuration:**
    - Click **Save** to apply the settings.
@@ -73,35 +74,27 @@ For **USG** devices:
 3. **Check Output:**
    - Look for `SUCCESS` messages indicating that the DDNS update was successful.
 
-## 6. Do I need to pre-create DNS records in Cloudflare before configuring DDNS on my UniFi device?
-
-Yes, for subdomains (e.g., `sub.example.com`), you should manually create an A record in Cloudflare before configuring DDNS on your UniFi device.
-
-## 7. How do I configure DDNS for wildcard domains in Cloudflare?
-
-For wildcard domains, use `*.example.com` in the **Hostname** field when setting up DDNS in your UniFi device.
-
-## 8. What permissions are required for the Cloudflare API token used in DDNS configuration?
+## 6. What permissions are required for the Cloudflare API token used in DDNS configuration?
 
 The User API token should have the following permissions:
 
-- **Zone:**
-  - **Read**
-  - **DNS Edit**
+- **Account:**
+  - **Access: Apps and Policies: Edit**
+  - **Workers KV Storage: Read**
 
-Ensure the token is scoped to only one specific zone (domain) you intend to update.
-
-## 9. How frequently does the UniFi device update the DDNS record?
+## 7. How frequently does the UniFi device update the DDNS record?
 
 UniFi devices typically check for IP changes and update DDNS records approximately every two minutes.
 
-## 10. How can I configure DDNS for dual WAN setups on my UniFi device?
+## 8. How can I configure DDNS for dual WAN setups on my UniFi device?
 
 In dual WAN configurations, UniFi devices may not natively support configuring DDNS for both WAN interfaces simultaneously. To manage DDNS updates for both connections **use different DDNS providers**.
 
 Assign separate DDNS providers to each WAN interface if supported. Using the `custom` DDNS provider for one WAN connection and `dyndns` for the other is recommended.
 
-## 11. What should I do if I continue to experience issues with DDNS updates?
+Each DDNS configuration should use a different key-value pair from the KV store. The Worker Script updates ALL IPs in the specified Access Policy's include rules.
+
+## 9. What should I do if I continue to experience issues with DDNS updates?
 
 - **Verify Configuration:**
   - Double-check all entries in your DDNS settings for accuracy.

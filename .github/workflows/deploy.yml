@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - access
   workflow_dispatch:
   repository_dispatch:
 
@@ -19,5 +19,14 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@6d58852c35a27e6034745c5d0bc373d739014f7f # v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}  # secret to GitHub action
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}  # secret to GitHub action
+          secrets: |
+            CLOUDFLARE_ACCOUNT_ID
+          preCommands: |
+            echo "Update wrangler.toml to create CF KV namespace binding from secret"
+            echo "[[kv_namespaces]]" >> wrangler.toml
+            echo "binding = \"unifi_cloudflare_ddns_access_kv\"" >> wrangler.toml
+            echo "id = \"${{ secrets.CLOUDFLARE_NAMESPACE_ID }}\"" >> wrangler.toml
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}  # provide secrets access to CF worker

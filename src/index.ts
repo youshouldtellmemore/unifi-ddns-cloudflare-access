@@ -1,6 +1,4 @@
-import { ClientOptions, Cloudflare } from 'cloudflare';
-import { AAAARecord, ARecord } from 'cloudflare/src/resources/dns/records.js';
-type AddressableRecord = AAAARecord | ARecord;
+import { ClientOptions, Cloudflare, KVNamespace } from 'cloudflare';
 
 class HttpError extends Error {
 	constructor(
@@ -27,34 +25,31 @@ function constructClientOptions(request: Request): ClientOptions {
 	}
 
 	return {
-		apiEmail: decoded.substring(0, index),
-		apiToken: decoded.substring(index + 1),
+		apiToken: decoded.substring(index + 1)
 	};
 }
 
-function constructDNSRecord(request: Request): AddressableRecord {
+function constructIPPolicy(request: Request): IPPolicy {
 	const url = new URL(request.url);
 	const params = url.searchParams;
 	const ip = params.get('ip');
-	const hostname = params.get('hostname');
+	const policyKey = params.get('hostname');
 
 	if (ip === null || ip === undefined) {
 		throw new HttpError(422, 'The "ip" parameter is required and cannot be empty.');
 	}
 
-	if (hostname === null || hostname === undefined) {
+	if (policyKey === null || policyKey === undefined) {
 		throw new HttpError(422, 'The "hostname" parameter is required and cannot be empty.');
 	}
 
 	return {
-		content: ip,
-		name: hostname,
-		type: ip.includes('.') ? 'A' : 'AAAA',
-		ttl: 1,
+		ip: ip,
+		policyIdAlias: policyKey
 	};
 }
 
-async function update(clientOptions: ClientOptions, newRecord: AddressableRecord): Promise<Response> {
+async function update(accountId: string, kvNamespaceId: any, clientOptions: ClientOptions, newPolicy: IPPolicy): Promise<Response> {
 	const cloudflare = new Cloudflare(clientOptions);
 
 	const tokenStatus = (await cloudflare.user.tokens.verify()).status;
@@ -62,68 +57,73 @@ async function update(clientOptions: ClientOptions, newRecord: AddressableRecord
 		throw new HttpError(401, 'This API Token is ' + tokenStatus);
 	}
 
-	const zones = (await cloudflare.zones.list()).result;
-	if (zones.length > 1) {
-		throw new HttpError(400, 'More than one zone was found! You must supply an API Token scoped to a single zone.');
-	} else if (zones.length === 0) {
-		throw new HttpError(400, 'No zones found! You must supply an API Token scoped to a single zone.');
-	}
+	// Get policy noted by hostname input.
+	const policyUUID = await kvNamespaceId.get(newPolicy.policyIdAlias);
 
-	const zone = zones[0];
-
-	const records = (
-		await cloudflare.dns.records.list({
-			zone_id: zone.id,
-			name: newRecord.name as any,
-			type: newRecord.type,
+	// Fetch existing policy
+	const policies = (
+		await cloudflare.zeroTrust.access.policies.list({
+			id: policyUUID,
+			account_id: accountId
 		})
 	).result;
-
-	if (records.length > 1) {
-		throw new HttpError(400, 'More than one matching record found!');
-	} else if (records.length === 0 || records[0].id === undefined) {
-		throw new HttpError(400, 'No record found! You must first manually create the record.');
+	if (policies.length === 0) {
+		throw new HttpError(400, 'No policies found! You must first manually create the policy.');
 	}
+	const policy = policies[0];
 
-	// Extract current properties
-	const currentRecord = records[0] as AddressableRecord;
-	const proxied = currentRecord.proxied ?? false; // Default to `false` if `proxied` is undefined
-	const comment = currentRecord.comment;
-
-	await cloudflare.dns.records.update(records[0].id, {
-		content: newRecord.content,
-		zone_id: zone.id,
-		name: newRecord.name as any,
-		type: newRecord.type,
-		proxied, // Pass the existing "proxied" status
-		comment, // Pass the existing "comment"
+	// Identify first include.ip rule and update to match new IP.
+	let updated = false;
+	const policyInclude = policy.include.map((rule: any) => {
+		let newRule = rule;
+		if (!updated && rule.ip) {
+			rule.ip.ip = newPolicy.ip;
+			updated = true;
+		}
+		return rule;
 	});
 
-	console.log('DNS record for ' + newRecord.name + '(' + newRecord.type + ') updated successfully to ' + newRecord.content);
+	// Send updated policy
+	const updateResponse = await cloudflare.zeroTrust.access.policies.update(
+		policyUUID,
+		{
+			account_id: accountId,
+			name: policy.name,
+			decision: policy.decision,
+			include: policyInclude,
+		}
+	);
+
+	console.log('Policy ' + policy.name + '\'s IPRange include rule successfully to ' + newPolicy.ip + '.');
 
 	return new Response('OK', { status: 200 });
 }
 
 export default {
-	async fetch(request): Promise<Response> {
+	async fetch(request: Request, env: Env): Promise<Response> {
 		const url = new URL(request.url);
 		console.log('Requester IP: ' + request.headers.get('CF-Connecting-IP'));
+		console.log('CF Ray ID: ' + request.headers.get('CF-Ray'));
+		console.log('User Agent: ' + request.headers.get('User-Agent'));
+		console.log('Referer: ' + request.headers.get('Referer'));
 		console.log(request.method + ': ' + request.url);
 		console.log('Body: ' + (await request.text()));
 
 		try {
-			// Construct client options and DNS record
+			// Construct client options and IP policy
 			const clientOptions = constructClientOptions(request);
-			const record = constructDNSRecord(request);
+			const policy = constructIPPolicy(request);
 
 			// Run the update function
-			return await update(clientOptions, record);
+			const accountId = env.CLOUDFLARE_ACCOUNT_ID;
+			const kvNamespaceId = env.unifi_cloudflare_ddns_access_kv;
+			return await update(accountId, kvNamespaceId, clientOptions, policy);
 		} catch (error) {
 			if (error instanceof HttpError) {
-				console.log('Error updating DNS record: ' + error.message);
+				console.log('Error updating policy: ' + error.message);
 				return new Response(error.message, { status: error.statusCode });
 			} else {
-				console.log('Error updating DNS record: ' + error);
+				console.log('Error updating policy: ' + error);
 				return new Response('Internal Server Error', { status: 500 });
 			}
 		}

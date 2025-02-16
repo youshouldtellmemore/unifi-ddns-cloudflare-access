@@ -1,7 +1,7 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "unifi-cloudflare-ddns"
+name = "unifi-cloudflare-ddns-access"
 main = "src/index.ts"
-compatibility_date = "2024-12-18"
+compatibility_date = "2025-02-16"
 compatibility_flags = ["nodejs_compat"]
 
 # Workers Logs
@@ -15,3 +15,8 @@ logs.enabled = true
 # Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
 [placement]
 mode = "smart"
+
+# echo'd out during deployment to dynamically set binding's id to secret
+# [[kv_namespaces]]
+# binding = "unifi_cloudflare_ddns_access_kv"
+# id = "${CLOUDFLARE_NAMESPACE_ID}"
