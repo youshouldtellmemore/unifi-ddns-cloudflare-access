@@ -117,7 +117,7 @@ When the GitHub deployment workflow action completes, you can verify it's presen
 You can test the Worker using curl:
 ```sh
 curl https://<worker-name>.<worker-subdomain>.workers.dev/update?ip=%i&hostname=%h \
-	 -X GET
+	 -X GET \
 	 -H "Authorization: Bearer $(echo "anyusername:my-cloudflare-api-token-for-ddns-client" | base64 )"
 ```
 
