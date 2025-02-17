@@ -18,7 +18,7 @@ The Policy ID is masked using a friendly name mapped to a Policy ID via a key-va
 
 After moving my domains to Cloudflare, setting up a tunnel, and beginning to play with Zero Trust Access, I was looking for DDNS for a Zero Trust Access Policy IP rule.
 
-Since UniFi devices don't natively support DDNS for Cloudflare anyway, a popular search result for Cloudflare and DDNS is https://github.com/willswire/unifi-ddns. Adapting this solution helped me learn GitHub Workflows, GitHub Actions, TypeScript, Cloudflare Workers, and Cloudflare KV Storage.
+Since UniFi devices don't natively support DDNS for Cloudflare anyway, a popular search result for Cloudflare and DDNS is https://github.com/willswire/unifi-ddns. Adapting this solution helped me learn GitHub Workflows, GitHub Actions, TypeScript, npm, Cloudflare Workers, and Cloudflare KV Storage.
 
 ## 🚀 **Setup**
 
