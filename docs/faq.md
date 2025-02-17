@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-This FAQ addresses common issues and solutions for configuring UniFi devices to update Cloudflare DNS records using DDNS, based on discussions from [issues](https://github.com/willswire/unifi-ddns/issues/) and [discussions](https://github.com/willswire/unifi-ddns/discussions).
+This FAQ addresses common issues and solutions for configuring UniFi devices to update Cloudflare DNS records using DDNS, based on discussions from [issues](https://github.com/willswire/unifi-ddns-cloudflare-access/issues/) and [discussions](https://github.com/willswire/unifi-ddns-cloudflare-access/discussions).
 
 ## 1. What is the correct server configuration for UniFi devices when using Cloudflare DDNS?
 
